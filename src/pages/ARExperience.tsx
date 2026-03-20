@@ -3,6 +3,8 @@ import { Camera, X, Smartphone, Hand, Layers, ScanLine, Eye, Video, VideoOff } f
 import Layout from "@/components/Layout";
 import FadeIn from "@/components/FadeIn";
 import { Button } from "@/components/ui/button";
+import MotherboardModel from "@/components/MotherboardModel";
+
 
 type Mode = "marker" | "markerless" | null;
 
@@ -137,14 +139,9 @@ const ARExperience = () => {
         </div>
 
         {/* Center placeholder */}
-        <div className="absolute inset-0 z-[5] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl border-2 border-dashed border-white/20 flex items-center justify-center">
-              <Layers size={48} className="text-white/30" />
-            </div>
-            <p className="text-white/50 text-xs">3D Motherboard Model</p>
-          </div>
-        </div>
+      <div className="absolute inset-0 z-[5]">
+  <MotherboardModel />
+</div>
 
         {/* Bottom controls */}
         <div className="absolute bottom-0 left-0 right-0 z-10 px-6 pb-[env(safe-area-inset-bottom,24px)] pt-4 bg-gradient-to-t from-black/60 to-transparent">

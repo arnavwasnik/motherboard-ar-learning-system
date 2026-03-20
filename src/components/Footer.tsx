@@ -33,9 +33,36 @@ const Footer = () => (
           </a>
         </div>
       </div>
-      <div className="mt-10 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Motherboard AR — Final Year Engineering Project
-      </div>
+     
+<div className="mt-10 pt-6 border-t border-border text-center text-xs text-muted-foreground space-y-3">
+
+  <p>© {new Date().getFullYear()} Motherboard AR</p>
+
+  <p className="text-muted-foreground/80">
+    Developed by Final Year Engineering Students
+  </p>
+
+  {/* Team Inline Structured */}
+  <div className="max-w-xl mx-auto text-[11px] sm:text-xs leading-relaxed text-muted-foreground/90">
+    <p>
+      <span className="text-foreground font-medium">Arnav Wasnik</span> — Lead, Frontend & AR &nbsp;|&nbsp;
+      <span className="text-foreground font-medium">Aniket Thaokar</span> — AR Dev
+    </p>
+    <p>
+      <span className="text-foreground font-medium">Bhushan Kawale</span> — AR Dev &nbsp;|&nbsp;
+      <span className="text-foreground font-medium">Aditya Jamunpane</span> — Testing & Docs
+    </p>
+    <p>
+      <span className="text-foreground font-medium">Aditya Meshram</span> — Testing & Support
+    </p>
+  </div>
+
+  {/* Department */}
+  <p className="text-muted-foreground/60">
+    Department of Artificial Intelligence · G H Raisoni College of Engineering and Management, Nagpur
+  </p>
+
+</div>
     </div>
   </footer>
 );

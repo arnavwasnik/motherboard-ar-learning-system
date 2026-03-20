@@ -1,30 +1,30 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Camera, X, Smartphone, Hand, Layers } from "lucide-react";
+import { Camera, X, Smartphone, Hand, Layers, ScanLine, Eye, Video, VideoOff } from "lucide-react";
 import Layout from "@/components/Layout";
 import FadeIn from "@/components/FadeIn";
 import { Button } from "@/components/ui/button";
 
-const instructions = [
-  { icon: Smartphone, text: "Point camera at motherboard marker" },
-  { icon: Hand, text: "Tap components to learn about them" },
-  { icon: Layers, text: "Assemble motherboard step-by-step" },
-];
+type Mode = "marker" | "markerless" | null;
 
 const ARExperience = () => {
+  const [selectedMode, setSelectedMode] = useState<Mode>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [markerlessOpen, setMarkerlessOpen] = useState(false);
+  const [cameraBgEnabled, setCameraBgEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const markerlessVideoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const startCamera = useCallback(async () => {
-    setError(null);
+  const requestCamera = useCallback(async (videoEl: HTMLVideoElement | null) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false,
       });
       streamRef.current = stream;
-      setCameraOpen(true);
+      if (videoEl) videoEl.srcObject = stream;
+      return true;
     } catch (err: any) {
       if (err.name === "NotAllowedError") {
         setError("Camera permission denied. Please allow camera access and try again.");
@@ -33,8 +33,23 @@ const ARExperience = () => {
       } else {
         setError("Unable to access camera. Please try again.");
       }
+      return false;
     }
   }, []);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+  }, []);
+
+  // Marker-based launch
+  const launchMarker = useCallback(async () => {
+    setError(null);
+    const ok = await requestCamera(null);
+    if (ok) setCameraOpen(true);
+  }, [requestCamera]);
 
   useEffect(() => {
     if (cameraOpen && videoRef.current && streamRef.current) {
@@ -42,14 +57,41 @@ const ARExperience = () => {
     }
   }, [cameraOpen]);
 
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    }
+  const closeMarker = useCallback(() => {
+    stopCamera();
     setCameraOpen(false);
+  }, [stopCamera]);
+
+  // Markerless launch
+  const launchMarkerless = useCallback(() => {
+    setError(null);
+    setMarkerlessOpen(true);
   }, []);
 
+  const closeMarkerless = useCallback(() => {
+    stopCamera();
+    setCameraBgEnabled(false);
+    setMarkerlessOpen(false);
+  }, [stopCamera]);
+
+  const toggleCameraBg = useCallback(async () => {
+    if (cameraBgEnabled) {
+      stopCamera();
+      setCameraBgEnabled(false);
+    } else {
+      setError(null);
+      const ok = await requestCamera(null);
+      if (ok) setCameraBgEnabled(true);
+    }
+  }, [cameraBgEnabled, stopCamera, requestCamera]);
+
+  useEffect(() => {
+    if (markerlessOpen && cameraBgEnabled && markerlessVideoRef.current && streamRef.current) {
+      markerlessVideoRef.current.srcObject = streamRef.current;
+    }
+  }, [markerlessOpen, cameraBgEnabled]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -58,79 +100,155 @@ const ARExperience = () => {
     };
   }, []);
 
+  // --- Marker-based fullscreen ---
   if (cameraOpen) {
     return (
-      <div className="fixed inset-0 z-[100] bg-black">
-        {/* Camera feed */}
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-
-        {/* Top overlay */}
+      <div className="fixed inset-0 z-[100] bg-background">
+        <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top,12px)] pb-3 bg-gradient-to-b from-black/60 to-transparent">
-          <button
-            onClick={stopCamera}
-            className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white"
-          >
+          <button onClick={closeMarker} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
             <X size={20} />
           </button>
-          <span className="text-white/90 text-sm font-medium tracking-wide">AR Mode</span>
+          <span className="text-white/90 text-sm font-medium tracking-wide">Marker AR</span>
           <div className="w-10" />
         </div>
-
-        {/* Bottom overlay */}
         <div className="absolute bottom-0 left-0 right-0 z-10 px-6 pb-[env(safe-area-inset-bottom,24px)] pt-6 bg-gradient-to-t from-black/60 to-transparent">
-          <p className="text-white/80 text-sm text-center">
-            Point your camera at the motherboard marker
-          </p>
+          <p className="text-white/80 text-sm text-center">Point your camera at the motherboard marker</p>
         </div>
       </div>
     );
   }
 
+  // --- Markerless fullscreen ---
+  if (markerlessOpen) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-[hsl(222,47%,8%)]">
+        {cameraBgEnabled && (
+          <video ref={markerlessVideoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+        )}
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top,12px)] pb-3 bg-gradient-to-b from-black/60 to-transparent">
+          <button onClick={closeMarkerless} className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+            <X size={20} />
+          </button>
+          <span className="text-white/90 text-sm font-medium tracking-wide">Markerless AR</span>
+          <div className="w-10" />
+        </div>
+
+        {/* Center placeholder */}
+        <div className="absolute inset-0 z-[5] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl border-2 border-dashed border-white/20 flex items-center justify-center">
+              <Layers size={48} className="text-white/30" />
+            </div>
+            <p className="text-white/50 text-xs">3D Motherboard Model</p>
+          </div>
+        </div>
+
+        {/* Bottom controls */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 px-6 pb-[env(safe-area-inset-bottom,24px)] pt-4 bg-gradient-to-t from-black/60 to-transparent">
+          <button
+            onClick={toggleCameraBg}
+            className="mx-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm font-medium transition-colors active:bg-white/20"
+          >
+            {cameraBgEnabled ? <VideoOff size={18} /> : <Video size={18} />}
+            {cameraBgEnabled ? "Disable Camera" : "Enable Camera Background"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Selection page ---
   return (
     <Layout>
-      <section className="px-6 py-12 md:section-padding min-h-[calc(100vh-var(--nav-height)-4rem)] flex items-center">
-        <div className="w-full max-w-md mx-auto text-center">
+      <section className="px-5 py-10 md:section-padding min-h-[calc(100vh-var(--nav-height)-4rem)] flex items-center">
+        <div className="w-full max-w-md mx-auto">
           <FadeIn>
-            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-              <Camera size={32} className="text-primary" />
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Camera size={28} className="text-primary" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">AR Experience</h1>
+              <p className="text-muted-foreground text-sm leading-relaxed">Choose how you want to explore the motherboard.</p>
             </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold text-foreground mb-3">
-              AR Experience
-            </h1>
-            <p className="text-muted-foreground text-sm md:text-base mb-8 leading-relaxed">
-              Scan a motherboard marker to start learning interactively.
-            </p>
           </FadeIn>
 
+          {/* Mode cards */}
           <FadeIn delay={0.1}>
+            <div className="space-y-3 mb-6">
+              {/* Marker-based */}
+              <button
+                onClick={() => setSelectedMode("marker")}
+                className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
+                  selectedMode === "marker"
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-card/40"
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <ScanLine size={22} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-base mb-1">Marker-Based AR</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">Scan a marker to place the motherboard in real space.</p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Markerless */}
+              <button
+                onClick={() => setSelectedMode("markerless")}
+                className={`w-full text-left p-5 rounded-2xl border-2 transition-all ${
+                  selectedMode === "markerless"
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-card/40"
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Eye size={22} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-base mb-1">Markerless AR</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">View the motherboard instantly without a marker.</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </FadeIn>
+
+          {/* Launch button */}
+          <FadeIn delay={0.15}>
             <Button
               size="lg"
               className="w-full text-base py-7 rounded-xl"
-              onClick={startCamera}
+              disabled={!selectedMode}
+              onClick={selectedMode === "marker" ? launchMarker : launchMarkerless}
             >
-              <Camera className="mr-2" size={20} /> Launch AR Camera
+              <Camera className="mr-2" size={20} />
+              {selectedMode === "marker" ? "Launch AR Camera" : selectedMode === "markerless" ? "Launch Markerless AR" : "Select a Mode"}
             </Button>
-            {error && (
-              <p className="mt-4 text-sm text-destructive">{error}</p>
-            )}
+            {error && <p className="mt-3 text-sm text-destructive text-center">{error}</p>}
           </FadeIn>
 
+          {/* Guidance */}
           <FadeIn delay={0.2}>
-            <div className="mt-10 space-y-3">
-              {instructions.map((inst, i) => (
-                <div key={i} className="flex items-center gap-4 text-left px-4 py-3 rounded-xl bg-card/40">
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <inst.icon size={18} className="text-primary" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">{inst.text}</p>
-                </div>
-              ))}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-card/40">
+                <ScanLine size={16} className="text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-foreground">Marker-Based:</span> Use a printed marker to view the motherboard in real-world space.
+                </p>
+              </div>
+              <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-card/40">
+                <Eye size={16} className="text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-foreground">Markerless:</span> Instantly explore the motherboard. Enable camera background for a real-world feel.
+                </p>
+              </div>
             </div>
           </FadeIn>
         </div>

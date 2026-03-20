@@ -6,7 +6,8 @@ const members = [
   {
     name: "Arnav Wasnik",
     roll: "A-21",
-    image: "/team/arnav.webp",
+    role: "Lead, Frontend, Backend, Hosting & AR",
+    image: "/team/arnav.jpeg",
     phone: "7709773462",
     linkedin: "https://www.linkedin.com/in/arnavwasnik",
     website: "https://arnavwasnikportfolio.netlify.app/",
@@ -14,32 +15,36 @@ const members = [
   {
     name: "Aniket Thaokar",
     roll: "A-15",
-    image: "/team/aniket.jpg",
-    phone: "+91XXXXXXXXXX",
+    role: "AR Development",
+    image: "/team/aniket.png",
+    phone: "9356811029",
     linkedin: "#",
     website: "#",
   },
   {
     name: "Bhushan Kawale",
     roll: "A-40",
-    image: "/team/bhushan.jpg",
-    phone: "+91XXXXXXXXXX",
+    role: "AR Development",
+    image: "/team/bhushan.jpeg",
+    phone: "9112075639",
     linkedin: "#",
     website: "#",
   },
   {
     name: "Aditya Jamunpane",
     roll: "A-5",
-    image: "/team/aditya-j.jpg",
-    phone: "+91XXXXXXXXXX",
+    role: "Testing & Documentation",
+    image: "/team/aditya-j.jpeg",
+    phone: "8855988903",
     linkedin: "#",
     website: "#",
   },
   {
     name: "Aditya Meshram",
     roll: "A-6",
-    image: "/team/aditya-m.jpg",
-    phone: "+91XXXXXXXXXX",
+    role: "Testing & Support",
+    image: "/team/aditya-m.jpeg",
+    phone: "8766700138",
     linkedin: "#",
     website: "#",
   },
@@ -50,32 +55,40 @@ const Team = () => {
 
   return (
     <Layout>
-      <section className="px-4 pt-6 pb-12">
-        <div className="container-narrow">
+      <section className="px-4 pt-6 pb-16">
+        <div className="max-w-5xl mx-auto">
 
+          {/* Header */}
           <FadeIn>
             <p className="text-primary text-xs font-semibold tracking-wider uppercase mb-2">
               Team
             </p>
 
-            <h1 className="text-2xl font-bold text-foreground mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
               Meet Our Team
             </h1>
           </FadeIn>
 
           {/* Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
 
             {members.map((m, i) => (
               <FadeIn key={m.name} delay={i * 0.06}>
 
-                <div className="glass rounded-xl p-4 text-center">
+                <div
+                  className={`glass rounded-xl p-4 text-center transition-all duration-300 
+                  ${
+                    m.name === "Arnav Wasnik"
+                      ? "border border-primary/40 shadow-lg"
+                      : "border border-white/10"
+                  }`}
+                >
 
                   {/* Image */}
                   <img
                     src={m.image}
                     alt={m.name}
-                    className="w-20 h-20 mx-auto rounded-full object-cover border border-white/20 mb-3"
+                    className="w-20 h-20 mx-auto rounded-full object-cover border border-white/20 mb-3 shadow-md"
                   />
 
                   {/* Name */}
@@ -83,15 +96,20 @@ const Team = () => {
                     {m.name}
                   </h3>
 
+                  {/* Role */}
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    {m.role}
+                  </p>
+
                   {/* Roll */}
                   <p className="text-primary text-xs mt-1 mb-3">
                     Roll No: {m.roll}
                   </p>
 
-                  {/* Contact Button */}
+                  {/* Button */}
                   <button
                     onClick={() => setSelected(m)}
-                    className="text-xs px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition"
+                    className="text-xs px-3 py-1.5 rounded-md bg-primary/10 text-primary hover:bg-primary hover:text-white transition"
                   >
                     Contact
                   </button>
@@ -104,7 +122,7 @@ const Team = () => {
           </div>
         </div>
 
-        {/* Contact Modal */}
+        {/* Modal */}
         {selected && (
           <div
             className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4"
@@ -124,6 +142,10 @@ const Team = () => {
               <h2 className="text-lg font-semibold text-foreground">
                 {selected.name}
               </h2>
+
+              <p className="text-[12px] text-muted-foreground mt-1">
+                {selected.role}
+              </p>
 
               <p className="text-primary text-sm mb-6">
                 Roll No: {selected.roll}

@@ -19,6 +19,7 @@ const ARExperience = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const markerlessVideoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [selectedModel, setSelectedModel] = useState<"arduino" | "raspberry" | "motherboard" | null>(null);
 
  const requestCamera = useCallback(async () => {
   try {
@@ -73,14 +74,16 @@ const ARExperience = () => {
 
   // Markerless launch
   const launchMarkerless = useCallback(() => {
-    setError(null);
-    setMarkerlessOpen(true);
-  }, []);
+  setError(null);
+  setSelectedModel(null); // 👈 open popup first
+  setMarkerlessOpen(true);
+}, []);
 
   const closeMarkerless = useCallback(() => {
     stopCamera();
     setCameraBgEnabled(false);
     setMarkerlessOpen(false);
+     setSelectedModel(null);
   }, [stopCamera]);
 
   const toggleCameraBg = useCallback(async () => {
@@ -120,10 +123,10 @@ const ARExperience = () => {
   );
 }
 
-if (markerlessOpen) {
+if (markerlessOpen && selectedModel) {
   return (
     <MarkerlessView
-      selectedModel={"motherboard"} 
+       selectedModel={selectedModel}
       videoRef={markerlessVideoRef}
       stream={streamRef.current}
       cameraBgEnabled={cameraBgEnabled}
@@ -191,6 +194,55 @@ if (markerlessOpen) {
               </button>
             </div>
           </FadeIn>
+
+          {/* Launch Markerless AR */}
+          {selectedMode === "markerless" && markerlessOpen && selectedModel === null && (
+  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+
+    <div className="bg-card p-6 rounded-2xl w-[90%] max-w-sm text-center">
+
+      <h2 className="text-lg font-semibold mb-4">
+        Choose Model
+      </h2>
+
+      <div className="space-y-3">
+
+        <button
+          onClick={() => setSelectedModel("motherboard")}
+          className="w-full py-3 rounded-xl bg-primary text-white"
+        >
+          Motherboard
+        </button>
+
+        <button
+          onClick={() => setSelectedModel("raspberry")}
+          className="w-full py-3 rounded-xl bg-primary/80 text-white"
+        >
+          Raspberry Pi
+        </button>
+
+        <button
+          onClick={() => setSelectedModel("arduino")}
+          className="w-full py-3 rounded-xl bg-primary/60 text-white"
+        >
+          Arduino Uno
+        </button>
+
+      </div>
+
+      <button
+        onClick={() => {
+          setMarkerlessOpen(false);
+          setSelectedModel(null);
+        }}
+        className="mt-4 text-sm text-muted-foreground"
+      >
+        Cancel
+      </button>
+
+    </div>
+  </div>
+)}
 
           {/* Launch button */}
           <FadeIn delay={0.15}>

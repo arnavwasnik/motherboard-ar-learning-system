@@ -23,6 +23,196 @@ declare global {
 export default function MotherboardViewer() {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState<any>({});
+  const partInfo: any = {
+  CPU: `The CPU (Central Processing Unit) is the brain of the motherboard.
+It performs calculations and executes instructions from programs.
+Modern CPUs contain billions of transistors inside a tiny chip.
+It communicates with RAM, storage, and other components.
+The CPU socket holds the processor securely in place.
+Thermal paste and cooling are essential for proper functioning.
+High performance CPUs improve system speed and multitasking.
+Clock speed determines how fast instructions are processed.
+Multi-core CPUs allow parallel processing.
+Cache memory inside CPU improves efficiency.
+Without CPU, the system cannot function.
+It controls almost every operation in a computer.
+Used in gaming, servers, and embedded systems.
+Consumes significant power compared to other parts.
+Requires motherboard compatibility.
+Connected via chipset and bus systems.
+Works with BIOS for boot operations.
+Supports instructions like arithmetic and logic.
+Modern CPUs include integrated graphics.
+Critical component in system performance.`,
+
+  RAM: `RAM (Random Access Memory) stores temporary data for quick access.
+It is volatile memory, meaning data is lost when power is off.
+Used to run applications and operating systems.
+More RAM allows smoother multitasking.
+Located near CPU for faster communication.
+DDR variants improve speed and efficiency.
+Measured in GB (Gigabytes).
+Helps reduce system lag.
+Works closely with CPU cache.
+Essential for gaming and heavy software.
+Faster RAM improves performance.
+Used in all modern computers.
+Supports temporary program storage.
+Important for system responsiveness.
+RAM slots allow upgrades.
+Dual channel improves speed.
+Consumes less power compared to CPU.
+Short-term memory of system.
+Crucial for performance optimization.
+Without RAM system will crash.`,
+
+  M2: `M.2 SSD is a high-speed storage device.
+It is faster than traditional HDD and SATA SSD.
+Uses NVMe interface for high bandwidth.
+Installed directly on motherboard.
+No cables required.
+Compact and efficient design.
+Used for OS and applications.
+Provides fast boot time.
+Improves loading speeds.
+Supports modern computing needs.
+Consumes less power.
+Different sizes available.
+Used in laptops and desktops.
+Highly reliable storage.
+Improves gaming performance.
+Supports PCIe lanes.
+Faster than older storage tech.
+Key component for speed.
+Reduces latency significantly.
+Future of storage systems.`,
+
+  CAP: `Capacitors store electrical energy.
+They stabilize voltage on motherboard.
+Prevent sudden power fluctuations.
+Protect components from damage.
+Used in power circuits.
+Help maintain consistent current flow.
+Essential for system stability.
+Small cylindrical components.
+Used in almost all electronics.
+Improve performance reliability.
+Reduce noise in circuits.
+Support power delivery.
+Different types available.
+Critical for motherboard lifespan.
+Handle voltage spikes.
+Support CPU and RAM power.
+Improve overall system health.
+Tiny but very important.
+Used in power filtering.
+Without them system becomes unstable.`,
+
+  CHIP: `Chipset controls communication between components.
+Acts as traffic controller of motherboard.
+Manages data flow between CPU, RAM, and devices.
+Important for system compatibility.
+Defines motherboard features.
+Handles USB, storage, and PCIe.
+Essential for hardware coordination.
+Determines system capabilities.
+Works with BIOS and firmware.
+Improves system efficiency.
+Modern chipsets are highly advanced.
+Used in all computers.
+Supports expansion devices.
+Critical for motherboard function.
+Optimizes performance pathways.
+Handles input/output operations.
+Enables connectivity.
+Supports system architecture.
+Important for hardware integration.
+Core part of motherboard design.`,
+
+  PIN: `Pins and connectors allow hardware connections.
+Used for power and data transfer.
+Include headers for cables and devices.
+Essential for component linking.
+Located across motherboard.
+Support USB, fans, and more.
+Provide physical connectivity.
+Used for expansion cards.
+Important for system assembly.
+Allow modular upgrades.
+Carry electrical signals.
+Designed for precision.
+Critical for communication.
+Support external devices.
+Ensure proper connections.
+Used in all electronics.
+Help in circuit completion.
+Tiny but essential parts.
+Support motherboard functionality.
+Enable hardware integration.`,
+
+  IO: `I/O Ports allow external device connection.
+Include USB, HDMI, audio ports.
+Used for peripherals like keyboard and mouse.
+Provide communication interface.
+Located on motherboard rear panel.
+Support data transfer.
+Essential for user interaction.
+Allow display output.
+Support audio systems.
+Used for networking devices.
+Enable external connectivity.
+Handle input and output signals.
+Standardized interfaces.
+Critical for usability.
+Allow device expansion.
+Used in daily computing.
+Support various protocols.
+Important for system accessibility.
+Enhance system functionality.
+Bridge internal and external components.`,
+
+  HEATSINK: `Heatsink removes heat from components.
+Prevents overheating of CPU and SSD.
+Made of metal like aluminum.
+Works with airflow for cooling.
+Essential for performance stability.
+Reduces thermal throttling.
+Improves component lifespan.
+Used in gaming and high-performance PCs.
+Maintains optimal temperature.
+Passive cooling solution.
+Works with fans sometimes.
+Critical for SSD and VRM cooling.
+Ensures system safety.
+Improves efficiency.
+Protects hardware.
+Used in modern motherboards.
+Supports thermal management.
+Important for reliability.
+Prevents hardware damage.
+Key cooling component.`,
+
+  BATTERY: `CMOS Battery powers motherboard memory.
+Maintains BIOS settings.
+Keeps system clock running.
+Small circular battery.
+Used when system is off.
+Ensures boot settings are saved.
+Critical for system startup.
+Lasts several years.
+Easy to replace.
+Supports firmware memory.
+Prevents reset of settings.
+Used in all PCs.
+Maintains configuration.
+Tiny but important.
+Supports motherboard functionality.
+Used in embedded systems.
+Essential for BIOS.
+Stores system preferences.
+Important for system stability.
+Basic but critical component.`,
+};
 
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
 const [showPopup, setShowPopup] = useState(false);
@@ -303,12 +493,35 @@ new RGBELoader()
           "
         >
           <h2 className="text-lg font-semibold mb-2">{selectedPart}</h2>
-          <p className="text-sm text-white/80">
-            Detailed explanation about {selectedPart}.
-          </p>
+          <p className="text-sm text-white/80 whitespace-pre-line">
+  {partInfo[selectedPart] || "No data available"}
+</p>
         </div>
       </div>
     )}
+
+{/* DESKTOP INFO PANEL */}
+{selectedPart && (
+  <div className="
+    hidden sm:block
+    absolute top-6 right-6
+    w-[320px]
+    max-h-[70vh]
+    overflow-y-auto
+    bg-black/60 backdrop-blur-xl
+    text-white
+    p-5 rounded-2xl
+    z-50
+  ">
+    <h2 className="text-lg font-semibold mb-3">
+      {selectedPart}
+    </h2>
+
+    <p className="text-sm text-white/80 whitespace-pre-line leading-relaxed">
+      {partInfo[selectedPart] || "No data available"}
+    </p>
+  </div>
+)}
 
       {/* BUTTON BAR FIXED */}
       <div className="absolute bottom-20 left-0 right-0 flex justify-center z-50 pointer-events-auto">

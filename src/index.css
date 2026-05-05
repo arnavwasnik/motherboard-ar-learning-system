@@ -84,6 +84,7 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+<<<<<<< HEAD
 /* hide scrollbar */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -92,3 +93,5 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+=======
+>>>>>>> 8ec5b6623b07395c11bf937f8b5806fbbc4445ad

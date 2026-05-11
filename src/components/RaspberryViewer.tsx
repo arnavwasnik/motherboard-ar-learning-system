@@ -136,33 +136,151 @@ export default function RaspberryViewer() {
     };
   }, []);
 
-  const partInfo: any = {
-    Processor: {
-      name: "Broadcom BCM2837 SoC",
-      desc: "Main processor responsible for all computations."
-    },
-    USB: {
-      name: "USB Ethernet Controller LAN9514",
-      desc: "Controls USB ports and network interface."
-    },
-    Ports: {
-      name: "External IO & Ethernet Ports",
-      desc: "Includes USB, HDMI, and Ethernet connectivity."
-    },
-    GPIO: {
-      name: "GPIO Header 40 Pin",
-      desc: "Used for connecting external hardware like sensors."
-    },
-    Audio: {
-      name: "Audio Jack 3.5mm",
-      desc: "Provides audio output."
-    },
-    Power: {
-      name: "Power Management Components",
-      desc: "Regulates voltage and power flow."
-    },
-  };
+ const partInfo: any = {
+  Processor: {
+    name: "Broadcom BCM2837 SoC",
+    desc: `The Broadcom BCM2837 is the main processor of the Raspberry Pi.
+It is a System on Chip (SoC).
+Contains CPU, GPU, and memory controller in one chip.
+Acts as the brain of the Raspberry Pi board.
+Processes instructions and executes programs.
+Based on ARM architecture.
+Designed for low power consumption.
+Supports multitasking and Linux operating systems.
+Handles all major computations.
+Used in embedded systems and IoT projects.
+Provides graphics processing capability.
+Essential for running applications.
+Controls connected peripherals.
+Communicates with RAM and storage.
+Supports programming and automation projects.
+Common in educational electronics.
+Used in robotics and smart devices.
+Efficient and compact processing unit.
+Important for overall system performance.
+Core component of Raspberry Pi.`,
+  },
 
+  USB: {
+    name: "LAN9514 USB Ethernet Controller",
+    desc: `The LAN9514 chip manages USB and Ethernet functionality.
+Acts as both USB hub and Ethernet controller.
+Allows multiple USB devices to connect.
+Provides network communication support.
+Important for internet connectivity.
+Handles data transfer between devices.
+Integrated controller solution.
+Supports Raspberry Pi communication features.
+Used for external peripherals.
+Improves connectivity options.
+Efficient network management chip.
+Handles USB traffic routing.
+Supports high-speed data transfer.
+Essential for networking projects.
+Used in IoT and automation systems.
+Allows keyboard and mouse connection.
+Provides Ethernet port functionality.
+Small but powerful controller chip.
+Enhances board usability.
+Critical for external communication.`,
+  },
+
+  Ports: {
+    name: "External I/O Ports & RJ45 Ethernet",
+    desc: `These ports allow external device connectivity.
+Includes USB, HDMI, Ethernet, and other interfaces.
+RJ45 Ethernet port enables wired internet connection.
+USB ports connect peripherals like keyboard and mouse.
+HDMI port provides video output.
+Important for external communication.
+Used in daily Raspberry Pi operation.
+Supports networking and media projects.
+Allows data transfer with external devices.
+Essential for usability.
+Provides flexible connectivity options.
+Used in embedded and IoT systems.
+Supports external displays and accessories.
+Handles input and output operations.
+Critical for hardware interaction.
+Commonly used in electronics projects.
+Provides real-world interface support.
+Makes Raspberry Pi more versatile.
+Important for system accessibility.
+Bridge between board and external hardware.`,
+  },
+
+  GPIO: {
+    name: "40-Pin GPIO Header",
+    desc: `GPIO stands for General Purpose Input Output.
+Used for connecting sensors and external modules.
+Allows Raspberry Pi to interact with electronics.
+Supports digital input and output signals.
+Essential for robotics and automation.
+Can control LEDs, motors, and relays.
+Popular in DIY electronics projects.
+Supports communication protocols like I2C and SPI.
+Flexible hardware interface system.
+Important for embedded development.
+Allows hardware programming.
+Used widely in IoT applications.
+Enables real-world interaction.
+Critical educational feature of Raspberry Pi.
+Supports custom electronics integration.
+Provides direct hardware access.
+Useful for prototyping systems.
+Works with breadboards and modules.
+One of the most powerful Raspberry Pi features.
+Essential for maker projects.`,
+  },
+
+  Audio: {
+    name: "3.5mm Audio & Composite Jack",
+    desc: `This connector provides audio output functionality.
+Supports headphones and speakers.
+Also supports composite video output.
+Used in multimedia projects.
+Allows analog audio connection.
+Important for media center applications.
+Compact and simple interface.
+Supports educational electronics systems.
+Useful in entertainment projects.
+Provides sound output from Raspberry Pi.
+Can connect to external audio devices.
+Used in retro gaming systems.
+Supports video output for older displays.
+Enhances multimedia capabilities.
+Simple but important feature.
+Works with external speakers.
+Used in smart home projects.
+Provides combined audio/video interface.
+Common connector standard.
+Useful for learning electronics.`,
+  },
+
+  Power: {
+    name: "Power Management Capacitors",
+    desc: `These capacitors regulate and stabilize power flow.
+Protect Raspberry Pi from voltage fluctuations.
+Store small amounts of electrical energy.
+Essential for stable operation.
+Help maintain smooth current delivery.
+Used in power filtering circuits.
+Improve reliability of the board.
+Prevent sudden electrical spikes.
+Important for component safety.
+Used in all modern electronics.
+Support processor power requirements.
+Enhance electrical stability.
+Tiny but very important components.
+Reduce noise in power lines.
+Help improve lifespan of hardware.
+Maintain proper voltage levels.
+Critical for efficient performance.
+Used throughout the Raspberry Pi board.
+Essential for safe electronics operation.
+Important for system health.`,
+  },
+};
   const buttons = ["Processor", "USB", "Ports", "GPIO", "Audio", "Power"];
 
   return (
@@ -180,24 +298,62 @@ export default function RaspberryViewer() {
         </div>
       )}
 
-      {showPopup && selectedPart && (
-        <div
-          onClick={() => setShowPopup(false)}
-          className="fixed inset-0 bg-black/60 flex items-end justify-center pb-20 z-50"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-black/90 text-white p-5 rounded-2xl w-[90%] max-w-sm"
-          >
-            <h2 className="text-lg font-semibold mb-2">
-              {partInfo[selectedPart].name}
-            </h2>
-            <p className="text-sm text-white/80">
-              {partInfo[selectedPart].desc}
-            </p>
-          </div>
-        </div>
-      )}
+     {/* POPUP */}
+{showPopup && selectedPart && (
+  <div
+    onClick={() => setShowPopup(false)}
+    className="
+      fixed inset-0
+      bg-black/60
+      flex items-center justify-center
+      z-50
+    "
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        bg-black/90 text-white
+        p-5 rounded-2xl
+        w-[90%] max-w-sm
+        max-h-[80vh]
+        overflow-y-auto
+      "
+    >
+      <h2 className="text-lg font-semibold mb-3">
+        {partInfo[selectedPart].name}
+      </h2>
+
+      <p className="text-sm text-white/80 whitespace-pre-line leading-relaxed">
+        {partInfo[selectedPart].desc}
+      </p>
+    </div>
+  </div>
+)}
+
+{/* DESKTOP INFO PANEL */}
+{selectedPart && (
+  <div
+    className="
+      hidden sm:block
+      absolute top-6 right-6
+      w-[320px]
+      max-h-[70vh]
+      overflow-y-auto
+      bg-black/60 backdrop-blur-xl
+      text-white
+      p-5 rounded-2xl
+      z-50
+    "
+  >
+    <h2 className="text-lg font-semibold mb-3">
+      {partInfo[selectedPart].name}
+    </h2>
+
+    <p className="text-sm text-white/80 whitespace-pre-line leading-relaxed">
+      {partInfo[selectedPart].desc}
+    </p>
+  </div>
+)}
 
       <div className="absolute bottom-20 left-0 right-0 flex justify-center z-50">
         <div className="flex gap-2 px-3 py-2 rounded-full bg-black/50 backdrop-blur-xl overflow-x-auto whitespace-nowrap max-w-[95vw]">
